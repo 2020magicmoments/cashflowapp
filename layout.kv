@@ -1,0 +1,308 @@
+ScreenManager:
+    MenuScreen:
+    AddScreen:
+    ReportScreen:
+
+# ==============================================
+# MENU SCREEN (Dashboard)
+# ==============================================
+<MenuScreen>:
+    name: 'menu'
+    MDBoxLayout:
+        orientation: 'vertical'
+        md_bg_color: 1, 1, 1, 1  # Pure White Background
+
+        # --- Minimalist Top Bar ---
+        MDBoxLayout:
+            size_hint_y: None
+            height: "60dp"
+            padding: "20dp"
+            
+            MDLabel:
+                text: "Cash Flow"
+                font_style: "H5"
+                bold: True
+                theme_text_color: "Custom"
+                text_color: 0, 0, 0, 1
+                valign: "center"
+            
+            MDIconButton:
+                icon: "dots-vertical"
+                theme_text_color: "Custom"
+                text_color: 0, 0, 0, 1
+                pos_hint: {"center_y": .5}
+
+        ScrollView:
+            MDBoxLayout:
+                orientation: 'vertical'
+                padding: "20dp"
+                spacing: "25dp"
+                adaptive_height: True
+
+                # --- High Contrast Balance Card ---
+                MDCard:
+                    size_hint_y: None
+                    height: "160dp"
+                    radius: [25]
+                    elevation: 1
+                    md_bg_color: 0.1, 0.1, 0.1, 1  # Almost Black
+                    padding: "25dp"
+                    orientation: "vertical"
+                    spacing: "10dp"
+
+                    MDIcon:
+                        icon: "wallet-outline"
+                        theme_text_color: "Custom"
+                        text_color: 1, 1, 1, 1
+                        font_size: "30sp"
+                        pos_hint: {"right": 1}
+
+                    MDLabel:
+                        text: "Total Balance"
+                        theme_text_color: "Custom"
+                        text_color: 0.7, 0.7, 0.7, 1
+                        font_style: "Caption"
+                        text_transform: "uppercase"
+                    
+                    MDLabel:
+                        id: balance_label
+                        text: "$0.00"
+                        theme_text_color: "Custom"
+                        text_color: 1, 1, 1, 1
+                        font_style: "H3"
+                        bold: True
+
+                # --- Action Buttons ---
+                MDGridLayout:
+                    cols: 2
+                    spacing: "15dp"
+                    size_hint_y: None
+                    height: "140dp"
+
+                    # Add Button
+                    MDCard:
+                        orientation: "vertical"
+                        padding: "20dp"
+                        radius: [15]
+                        elevation: 1
+                        # line_color removed to prevent compatibility issues
+                        ripple_behavior: True
+                        on_release: root.manager.current = 'add'
+                        
+                        MDIcon:
+                            icon: "plus"
+                            halign: "center"
+                            font_size: "32sp"
+                            theme_text_color: "Custom"
+                            text_color: 0, 0, 0, 1
+                        
+                        MDLabel:
+                            text: "New Entry"
+                            halign: "center"
+                            font_style: "Button"
+                            theme_text_color: "Custom"
+                            text_color: 0, 0, 0, 1
+
+                    # Reports Button
+                    MDCard:
+                        orientation: "vertical"
+                        padding: "20dp"
+                        radius: [15]
+                        elevation: 1
+                        ripple_behavior: True
+                        on_release: root.manager.current = 'report'
+
+                        MDIcon:
+                            icon: "file-document-outline"
+                            halign: "center"
+                            font_size: "32sp"
+                            theme_text_color: "Custom"
+                            text_color: 0, 0, 0, 1
+                        
+                        MDLabel:
+                            text: "Statement"
+                            halign: "center"
+                            font_style: "Button"
+                            theme_text_color: "Custom"
+                            text_color: 0, 0, 0, 1
+
+# ==============================================
+# ADD TRANSACTION SCREEN
+# ==============================================
+<AddScreen>:
+    name: 'add'
+    MDBoxLayout:
+        orientation: 'vertical'
+        md_bg_color: 1, 1, 1, 1
+
+        # --- Header ---
+        MDBoxLayout:
+            size_hint_y: None
+            height: "60dp"
+            padding: "10dp"
+            
+            MDIconButton:
+                icon: "arrow-left"
+                theme_text_color: "Custom"
+                text_color: 0, 0, 0, 1
+                on_release: root.manager.current = 'menu'
+            
+            MDLabel:
+                text: "New Transaction"
+                bold: True
+                halign: "center"
+                font_style: "H6"
+                theme_text_color: "Custom"
+                text_color: 0, 0, 0, 1
+
+            Widget:
+                size_hint_x: None
+                width: "48dp"
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            padding: "30dp"
+            spacing: "25dp"
+
+            # Clean Fields
+            MDTextField:
+                id: amount
+                hint_text: "Amount"
+                input_filter: "float"
+                mode: "rectangle"
+                line_color_focus: 0, 0, 0, 1
+                text_color_focus: 0, 0, 0, 1
+                hint_text_color_focus: 0, 0, 0, 0.5
+                icon_right: "currency-usd"
+                icon_right_color: 0, 0, 0, 0.5
+
+            MDTextField:
+                id: category
+                hint_text: "Category"
+                mode: "rectangle"
+                line_color_focus: 0, 0, 0, 1
+                text_color_focus: 0, 0, 0, 1
+                hint_text_color_focus: 0, 0, 0, 0.5
+                icon_right: "label-outline"
+                icon_right_color: 0, 0, 0, 0.5
+
+            MDTextField:
+                id: date_field
+                hint_text: "Date"
+                text: app.get_today()
+                mode: "rectangle"
+                line_color_focus: 0, 0, 0, 1
+                text_color_focus: 0, 0, 0, 1
+                hint_text_color_focus: 0, 0, 0, 0.5
+                icon_right: "calendar-blank-outline"
+                icon_right_color: 0, 0, 0, 0.5
+
+            Widget:
+                size_hint_y: None
+                height: "20dp"
+
+            # --- Black & White Buttons ---
+            MDBoxLayout:
+                spacing: "20dp"
+                adaptive_height: True
+
+                # Income: Solid Black
+                MDRaisedButton:
+                    text: "INCOME"
+                    md_bg_color: 0, 0, 0, 1
+                    text_color: 1, 1, 1, 1
+                    elevation: 0
+                    size_hint_x: 0.5
+                    height: "50dp"
+                    on_release: app.save_transaction("Income")
+
+                # Expense: White with Black Text
+                MDRectangleFlatButton:
+                    text: "EXPENSE"
+                    text_color: 0, 0, 0, 1
+                    line_color: 0, 0, 0, 1
+                    size_hint_x: 0.5
+                    height: "50dp"
+                    on_release: app.save_transaction("Expense")
+
+            Widget: # Push content up
+
+# ==============================================
+# REPORT SCREEN
+# ==============================================
+<ReportScreen>:
+    name: 'report'
+    MDBoxLayout:
+        orientation: 'vertical'
+        md_bg_color: 1, 1, 1, 1
+
+        # --- Header ---
+        MDBoxLayout:
+            size_hint_y: None
+            height: "60dp"
+            padding: "10dp"
+            MDIconButton:
+                icon: "arrow-left"
+                theme_text_color: "Custom"
+                text_color: 0, 0, 0, 1
+                on_release: root.manager.current = 'menu'
+            MDLabel:
+                text: "History"
+                bold: True
+                halign: "center"
+                font_style: "H6"
+                theme_text_color: "Custom"
+                text_color: 0, 0, 0, 1
+            Widget:
+                size_hint_x: None
+                width: "48dp"
+
+        # --- Filter Bar ---
+        MDBoxLayout:
+            size_hint_y: None
+            height: "80dp"
+            padding: "20dp", "0dp"
+            spacing: "15dp"
+
+            MDTextField:
+                id: start_date
+                hint_text: "Start"
+                text: app.get_first_of_month()
+                mode: "line"
+                line_color_focus: 0, 0, 0, 1
+                text_color_focus: 0, 0, 0, 1
+            
+            MDTextField:
+                id: end_date
+                hint_text: "End"
+                text: app.get_today()
+                mode: "line"
+                line_color_focus: 0, 0, 0, 1
+                text_color_focus: 0, 0, 0, 1
+
+            MDIconButton:
+                icon: "refresh"
+                theme_text_color: "Custom"
+                text_color: 0, 0, 0, 1
+                pos_hint: {"center_y": .5}
+                on_release: app.generate_report()
+
+        # --- FIXED: Use MDSeparator instead of MDDivider ---
+        MDSeparator:
+            height: "1dp"
+
+        # --- List ---
+        ScrollView:
+            MDList:
+                id: report_list
+                padding: "20dp"
+                spacing: "10dp"
+
+    # --- Black FAB for PDF ---
+    MDFloatingActionButton:
+        icon: "tray-arrow-down"
+        md_bg_color: 0, 0, 0, 1
+        text_color: 1, 1, 1, 1
+        elevation: 2
+        pos_hint: {"right": .9, "y": .05}
+        on_release: app.generate_pdf_report()
