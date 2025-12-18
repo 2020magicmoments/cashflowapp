@@ -12,30 +12,31 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Debugging Step: This helps you see where files actually are in the logs
-      - name: List files (Debug)
+      # 1. DIAGNOSTIC STEP: This prints your file structure to the logs
+      # If the build fails, look at the logs for this step to see your folder names.
+      - name: List all files
         run: ls -R
 
+      # 2. Setup Java WITHOUT Caching
+      # We removed 'cache: gradle' because that was causing your first error.
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          # REMOVED 'cache: gradle' to stop the error
 
+      # 3. Make gradlew executable
+      # We assume gradlew is in the root. If this fails, check the "List all files" log.
       - name: Grant execute permission for gradlew
-        # CHANGE 'cashflowapp' to your actual folder name
-        working-directory: ./cashflowapp 
         run: chmod +x gradlew
 
+      # 4. Build
       - name: Build with Gradle
-        # CHANGE 'cashflowapp' to your actual folder name
-        working-directory: ./cashflowapp 
         run: ./gradlew assembleDebug
 
+      # 5. Upload Artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          # path also needs to include the subfolder
-          path: cashflowapp/app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
