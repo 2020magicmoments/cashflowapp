@@ -2,8 +2,6 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ "main" ] # Runs whenever you push to main
-  pull_request:
     branches: [ "main" ]
 
 jobs:
@@ -11,29 +9,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Setup Java (Required for Android builds)
+      # Debugging Step: This helps you see where files actually are in the logs
+      - name: List files (Debug)
+        run: ls -R
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: gradle
+          # REMOVED 'cache: gradle' to stop the error
 
-      # 3. Grant execute permission for gradlew
       - name: Grant execute permission for gradlew
+        # CHANGE 'cashflowapp' to your actual folder name
+        working-directory: ./cashflowapp 
         run: chmod +x gradlew
 
-      # 4. Build the APK (Debug version)
       - name: Build with Gradle
+        # CHANGE 'cashflowapp' to your actual folder name
+        working-directory: ./cashflowapp 
         run: ./gradlew assembleDebug
 
-      # 5. Upload the APK as an artifact so you can download it
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          # path also needs to include the subfolder
+          path: cashflowapp/app/build/outputs/apk/debug/app-debug.apk
