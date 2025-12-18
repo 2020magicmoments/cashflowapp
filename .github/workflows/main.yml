@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Android APK (Auto-Detect)
 
 on:
   push:
@@ -12,31 +12,38 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 1. DIAGNOSTIC STEP: This prints your file structure to the logs
-      # If the build fails, look at the logs for this step to see your folder names.
-      - name: List all files
-        run: ls -R
-
-      # 2. Setup Java WITHOUT Caching
-      # We removed 'cache: gradle' because that was causing your first error.
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # 3. Make gradlew executable
-      # We assume gradlew is in the root. If this fails, check the "List all files" log.
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Find gradlew and Build
+        run: |
+          # 1. Search for gradlew file anywhere in the repo
+          GRADLE_PATH=$(find . -name gradlew | head -n 1)
+          
+          if [ -z "$GRADLE_PATH" ]; then
+            echo "::error::Could not find gradlew file in the repository!"
+            exit 1
+          fi
 
-      # 4. Build
-      - name: Build with Gradle
-        run: ./gradlew assembleDebug
+          echo "Found gradlew at: $GRADLE_PATH"
+          
+          # 2. Get the folder path
+          PROJECT_ROOT=$(dirname "$GRADLE_PATH")
+          echo "Project root detected as: $PROJECT_ROOT"
 
-      # 5. Upload Artifact
+          # 3. Enter that folder
+          cd "$PROJECT_ROOT"
+
+          # 4. Make it executable and run build
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          # This wildcard path finds the APK wherever it was generated
+          path: '**/*.apk'
