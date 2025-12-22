@@ -1,4 +1,5 @@
 name: Build Android APK
+
 on:
   push:
     branches: [ main ]
@@ -11,12 +12,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # This saves the Android SDK and NDK so they don't download every time
+      - name: Cache Buildozer
+        uses: actions/cache@v4
+        with:
+          path: .buildozer
+          key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
+
       - name: Build APK with Buildozer
         uses: digreatbrian/buildozer-action@v2
         with:
           python-version: "3.10"
-          # We add a fix here to automatically accept licenses via buildozer
-          buildozer-cmd: yes | buildozer -v android debug
+          # Removed "yes |" to prevent the Broken Pipe error
+          buildozer-cmd: buildozer -v android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
