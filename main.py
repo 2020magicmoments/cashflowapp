@@ -9,7 +9,7 @@ from kivymd.toast import toast
 from kivy.utils import platform
 
 # Import logic from other files
-from database import db
+from database import Database
 from pdf_utils import create_pdf
 
 # Set window size only if not on Android
@@ -49,6 +49,7 @@ class CashFlowApp(MDApp):
         self.theme_cls.primary_palette = "Gray"  # <--- Change to Gray or BlueGray
         self.request_android_permissions()
         return Builder.load_file('layout.kv')
+        self.db = Database()
 
     def request_android_permissions(self):
         if platform == "android":
