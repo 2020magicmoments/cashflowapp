@@ -6,17 +6,26 @@ on:
 
 jobs:
   build:
-    # Changed from ubuntu-latest to 22.04 for better stability with Buildozer
     runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Accept Android Licenses
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager "build-tools;34.0.0" "platform-tools" "platforms;android-34"
+
       - name: Build APK with Buildozer
         uses: digreatbrian/buildozer-action@v2
         with:
-          # Quotes ensure this stays 3.10 and doesn't become 3.1
           python-version: "3.10"
           buildozer-cmd: buildozer -v android debug
 
