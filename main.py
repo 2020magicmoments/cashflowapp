@@ -19,10 +19,18 @@ if platform != 'android':
 # --- Screen Classes ---
 class MenuScreen(Screen):
     def on_enter(self):
-        Clock.schedule_once(self.update_balance)
+        # We need to give the app a split second to ensure DB is ready
+        Clock.schedule_once(self.update_balance, 0.1)
 
     def update_balance(self, dt):
-        bal = db.get_balance()
+        # FIX: Get the running app instance to access the database
+        app = MDApp.get_running_app()
+        
+        # Safety check in case DB isn't ready yet
+        if not hasattr(app, 'db') or not app.db:
+            return
+
+        bal = app.db.get_balance()
         if 'balance_label' in self.ids:
             self.ids.balance_label.text = f"${bal:.2f}"
             
@@ -46,10 +54,14 @@ class ReportScreen(Screen):
 class CashFlowApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Light"
-        self.theme_cls.primary_palette = "Gray"  # <--- Change to Gray or BlueGray
+        self.theme_cls.primary_palette = "Gray" 
         self.request_android_permissions()
-        return Builder.load_file('layout.kv')
+        
+        # FIX: Initialize Database BEFORE returning the KV file
+        # We assign it to 'self.db' so other screens can access it via the App instance
         self.db = Database()
+        
+        return Builder.load_file('layout.kv')
 
     def request_android_permissions(self):
         if platform == "android":
@@ -78,7 +90,8 @@ class CashFlowApp(MDApp):
             toast("Invalid Amount")
             return 
 
-        db.add_transaction(t_type, val_amount, category, date)
+        # FIX: Use self.db instead of global db
+        self.db.add_transaction(t_type, val_amount, category, date)
         
         screen.ids.amount.text = ""
         screen.ids.category.text = ""
@@ -90,7 +103,8 @@ class CashFlowApp(MDApp):
         start = screen.ids.start_date.text
         end = screen.ids.end_date.text
         
-        results = db.get_report(start, end)
+        # FIX: Use self.db instead of global db
+        results = self.db.get_report(start, end)
         list_view = screen.ids.report_list
         list_view.clear_widgets()
         
@@ -123,7 +137,9 @@ class CashFlowApp(MDApp):
         screen = self.root.get_screen('report')
         start = screen.ids.start_date.text
         end = screen.ids.end_date.text
-        data = db.get_report(start, end)
+        
+        # FIX: Use self.db instead of global db
+        data = self.db.get_report(start, end)
 
         if not data:
             toast("No data to save")
