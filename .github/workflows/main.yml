@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout code
-      - uses: actions/checkout@v4
+        uses: actions/checkout@v4
 
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
@@ -21,5 +21,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: CashFlowManager-debug
+          name: cashflowmanager-debug
           path: bin/*.apk
