@@ -1,32 +1,50 @@
 import sqlite3
 import os
 from kivy.utils import platform
+from kivy.app import App
 
 class Database:
     def __init__(self):
+        self.con = None
+        self.cursor = None
+        
+        # We don't connect immediately here anymore to prevent crashes
+        # during the import phase. We call connect() manually.
+        self.connect()
+
+    def connect(self):
         # Determine storage path based on OS
         if platform == "android":
-            from android.storage import app_storage_path
-            storage_path = app_storage_path()
-            self.db_path = os.path.join(storage_path, "cashflow.db")
+            # This gets the safe, internal storage directory for your app
+            app = App.get_running_app()
+            # If this is called before the app starts, app will be None
+            if app:
+                storage_path = app.user_data_dir
+                self.db_path = os.path.join(storage_path, "cashflow.db")
+            else:
+                # Fallback or error handling if initialized too early
+                print("Error: Database initialized before App started")
+                return 
         else:
             self.db_path = "cashflow.db"
             
         self.con = sqlite3.connect(self.db_path)
         self.cursor = self.con.cursor()
         self.create_table()
+        print(f"Database connected at: {self.db_path}")
 
     def create_table(self):
-        self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS transactions(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                type TEXT,
-                amount REAL,
-                category TEXT,
-                date TEXT
-            )
-        """)
-        self.con.commit()
+        if self.cursor:
+            self.cursor.execute("""
+                CREATE TABLE IF NOT EXISTS transactions(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    type TEXT,
+                    amount REAL,
+                    category TEXT,
+                    date TEXT
+                )
+            """)
+            self.con.commit()
 
     def add_transaction(self, t_type, amount, category, date):
         self.cursor.execute("INSERT INTO transactions (type, amount, category, date) VALUES (?, ?, ?, ?)",
@@ -49,5 +67,5 @@ class Database:
                             (start_date, end_date))
         return self.cursor.fetchall()
 
-# Create a single instance to be imported by other files
-db = Database()
+# DELETE the line below from this file!
+# db = Database()
