@@ -6,12 +6,12 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,ttf,json
 version = 1.0
 
-requirements = python3,kivy==2.2.1,kivymd==1.1.1,pillow,fpdf,sqlite3
+requirements = python3,kivy==2.2.1,kivymd==1.1.1,pillow,fpdf
 
 orientation = portrait
 fullscreen = 0
 
-android.permissions = INTERNET,READ_EXTERNAL_STORAGE
+android.permissions = INTERNET,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
 android.api = 33
 android.minapi = 21
 android.ndk = 25b
