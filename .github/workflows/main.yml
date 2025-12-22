@@ -2,7 +2,8 @@ name: Build Kivy APK
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -10,28 +11,15 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # 1. Clean up disk space (Android builds are large and can crash the runner)
-      - name: Free Disk Space
-        uses: jlumbroso/free-disk-space@main
-        with:
-          tool-cache: false
-          android: false # We use the docker container's android, so we don't need the runner's
-          dotnet: false
-          haskell: false
-          
-      # 2. Build with the updated Buildozer Action
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
         with:
-          command: buildozer android debug
-          buildozer_version: master # Uses the latest fixes for Android 13/33
-          
-      # 3. Upload the APK
+          command: buildozer -v android debug
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: package
+          name: CashFlowManager-debug
           path: bin/*.apk
